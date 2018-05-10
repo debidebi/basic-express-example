@@ -1,12 +1,12 @@
 var pgp = require('pg-promise')({});
-var connectionString = 'postgres://localhost/enrollmentz';
+var connectionString = 'postgres://localhost/notes';
 var db = pgp(connectionString);
 
-const getStudents = (req, res, next) => {
-  db.any('SELECT * FROM students')
+const getUsers = (req, res, next) => {
+  db.any('SELECT * FROM users')
     .then((data) => {
       res.status(200)
-         .send({
+         .json({
            data: data
          });
     })
@@ -16,5 +16,5 @@ const getStudents = (req, res, next) => {
 }
 
 module.exports = {
-  getStudents
+  getUsers
 };
