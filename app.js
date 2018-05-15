@@ -1,14 +1,16 @@
 const express = require('express');
 const logger = require('morgan');
 const path = require('path');
+const bodyParser = require('body-parser')
 const app = express();
 const port = 8000;
 
-const students = require('./routes/students');
+const fruit = require('./routes/fruit');
 
 app.use(logger('dev'));
+app.use(bodyParser())
 
-app.use('/students', students);
+app.use('/fruit', fruit);
 
 app.get('/reed', (req, res) => {
   res.send('Is it this one?');

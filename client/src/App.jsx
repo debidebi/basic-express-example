@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import FruitItem from './FruitItem';
 
 class App extends Component {
@@ -6,65 +7,55 @@ class App extends Component {
     super();
 
     this.state = {
-      fruits: [
-        {name: "banana", price: 1, quantity: 10},
-        {name: "mango", price: 5, quantity: 10},
-        {name: "cherries", price: 3, quantity: 10},
-        {name: "dragonfruit", price: 10, quantity: 10},
-        {name: "grapefruit", price: 4, quantity: 10},
-        {name: "kiwi", price: 6, quantity: 10},
-        {name: "grapes", price: 8, quantity: 10}
-      ],
-      people: ""
+      fruits: ''
     };
   }
 
   componentDidMount() {
-    fetch('/students')
+    fetch('/fruit')
       .then((data) => {
-        return data.json()
+        return data.json();
       })
       .then((parsed) => {
         this.setState({
-          people: parsed.data
+          fruits: parsed.data
         })
       })
   }
 
-  stealBanana = () => {
-    let bananaCount = this.state.fruits[0].quantity;
+  stealFruit = (name) => {
+    let oldState = this.state.fruits
+    let theRequest;
 
-    if (bananaCount > 0) {
-      this.setState({
-        fruits: [
-          {name: "banana", price: 1, quantity: (bananaCount - 1)},
-          {name: "mango", price: 5, quantity: 10},
-          {name: "cherries", price: 3, quantity: 10},
-          {name: "dragonfruit", price: 10, quantity: 10},
-          {name: "grapefruit", price: 4, quantity: 10},
-          {name: "kiwi", price: 6, quantity: 10},
-          {name: "grapes", price: 8, quantity: 10}
-        ]
-      })
+    let newState = oldState.map((fruitObj) => {
+      if ((fruitObj.name === name) && (fruitObj.quantity)) {
+        theRequest = {name: fruitObj.name, quantity: fruitObj.quantity - 1};
+        return {name: fruitObj.name, price: fruitObj.price, quantity: fruitObj.quantity - 1};
+      } else {
+        return fruitObj;
+      }
+    })
+
+    if (theRequest) {
+      axios.post('/fruit/remove', theRequest)
+        .then((parsed) => {
+          this.setState({
+            fruits: newState
+          })
+        })
     }
   }
 
   render() {
-    let fruitList = this.state.fruits.map((fruit) => {
-      // fruit = {name: "banana", price: 1}
-      return (<FruitItem name={fruit.name} price={fruit.price} quantity={fruit.quantity} steal={this.stealBanana} />);
-    });
-
-    if (this.state.people) {
-      let thePeople = this.state.people.map((person) => {
-        return (<li>{person.username}</li>)
-      })
+    if (this.state.fruits) {
+      let fruitList = this.state.fruits.map((fruit) => {
+        // fruit = {name: "banana", price: 1}
+        return (<FruitItem name={fruit.name} price={fruit.price} quantity={fruit.quantity} steal={this.stealFruit} />);
+      });
 
       return (
         <div className="App">
-          <ul>
-            {thePeople}
-          </ul>
+          <h3>Welcome to my Fruit Shop</h3>
           <ul>
             {fruitList}
           </ul>

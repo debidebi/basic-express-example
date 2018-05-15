@@ -2,8 +2,8 @@ var pgp = require('pg-promise')({});
 var connectionString = 'postgres://localhost/notes';
 var db = pgp(connectionString);
 
-const getUsers = (req, res, next) => {
-  db.any('SELECT * FROM users')
+const getAllFruit = (req, res, next) => {
+  db.any('SELECT * FROM fruits')
     .then((data) => {
       res.status(200)
          .json({
@@ -15,6 +15,22 @@ const getUsers = (req, res, next) => {
     })
 }
 
+const removeFruit = (req, res, next) => {
+  console.log(req.body)
+  db.any('UPDATE fruits SET quantity = ${quantity} WHERE name = ${name}', req.body)
+    .then((data) => {
+      res.status(200)
+         .json({
+           status: 'success!',
+           data: data
+         })
+    })
+    .catch((err) => {
+      return next(err);
+    })
+}
+
 module.exports = {
-  getUsers
+  getAllFruit,
+  removeFruit
 };
